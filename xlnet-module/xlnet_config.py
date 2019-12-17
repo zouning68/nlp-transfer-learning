@@ -81,7 +81,7 @@ elif TASK == 2:
     flags.DEFINE_string("output_dir", default="proc_data/imdb", help="Output dir for TF records.")
     flags.DEFINE_string("task_name", default="imdb", help="Task name")
     flags.DEFINE_bool("is_regression", default=False, help="Whether it's a regression task.")
-    flags.DEFINE_string("spiece_model_file", default="token_model/chinese/spiece.model", help="Sentence Piece model path.")
+    flags.DEFINE_string("spiece_model_file", default="token_model/english/spiece.model", help="Sentence Piece model path.")
     flags.DEFINE_integer("max_seq_length", default=128, help="Max sequence length : (pretrain flags.seq_len)")
     flags.DEFINE_string("data_dir", default="data/aclImdb", help="Directory for input data.")
     flags.DEFINE_bool("overwrite_data", default=False, help="If False, will use cached data if available.")
