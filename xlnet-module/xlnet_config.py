@@ -68,4 +68,4 @@ flags.DEFINE_float("min_lr_ratio", default=0.001, help="Minimum ratio learning r
 flags.DEFINE_float("weight_decay", default=0.0, help="Weight decay rate.")
 flags.DEFINE_float("adam_epsilon", default=1e-8, help="Adam epsilon.")
 flags.DEFINE_float("clip", default=1.0, help="Gradient clipping value.")
-flags.DEFINE_string("init_checkpoint", default="pretrain_model", help="Checkpoint path for initializing the model.")
+flags.DEFINE_string("init_checkpoint", default=None, help="Checkpoint path for initializing the model.")   # pretrain_model

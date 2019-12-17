@@ -2,6 +2,8 @@ import json
 import tensorflow as tf
 from data_utils import create_data
 from xlnet_config import conf
+from absl import app
+from train import main as pre_train_main
 
 def jd2corpus():
     jd = [line.split("\t")[33].replace("\\n","\n") for line in open(conf.jd, encoding="utf8").readlines()]
@@ -18,8 +20,12 @@ def get_pretrain_data():
     tf.logging.set_verbosity(tf.logging.INFO)
     tf.app.run(create_data)
 
+def pre_train_model():
+    app.run(pre_train_main)
+
 if __name__ == "__main__":
     pass
     #jd2corpus()
     #feature2tokens()
     #get_pretrain_data()
+    pre_train_model()
