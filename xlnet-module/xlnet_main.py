@@ -10,15 +10,18 @@ from run_classifier import main as classfier_main
 def get_corpus():
     matchObj = re.compile(r'(.+)&([0-9]+)', re.M | re.I)
     for i, filename in enumerate(tqdm(os.listdir(conf.original_corpus))):
+        corpus = []
         if not os.path.exists(conf.pretrain_corpus): os.makedirs(conf.pretrain_corpus)
-        with open(conf.pretrain_corpus + filename + ".txt", "w", encoding="utf8") as fout:
-            for line in open(conf.original_corpus + filename, encoding="utf8").readlines():
-                matchRes = matchObj.match(line)
-                if not matchRes: continue
-                text, freq = matchRes.group(1), int(matchRes.group(2))
-                text = re.sub(u"[=—】★一\-【◆④\t ]{1,}|\d[、.）)．]|[(（]\d[）)]|[0-9]{3,}", "", text)
-                if len(text) < 10: continue
-                fout.write(text.strip().lower() + "\n")
+        for line in open(conf.original_corpus + filename, encoding="utf8").readlines():
+            matchRes = matchObj.match(line)
+            if not matchRes: continue
+            text, freq = matchRes.group(1), int(matchRes.group(2))
+            text = re.sub(u"[=—】★一\-【◆④\t ]{1,}|\d[、.）)．]|[(（]\d[）)]|[0-9]{3,}", "", text)
+            if len(text) < 10: continue
+            corpus.append(text.strip().lower() + "\n")
+        if corpus:
+            with open(conf.pretrain_corpus + filename + ".txt", "w", encoding="utf8") as fout:
+                fout.write(''.join(corpus))
 
 def feature2tokens():
     with open("data/features", "r", encoding="utf8") as fin:
@@ -37,7 +40,7 @@ def run_classifier():
     app.run(classfier_main)
 
 if __name__ == "__main__":
-    #get_corpus()
+    get_corpus(); exit()
     #feature2tokens()
     if TASK == 0:   get_pretrain_data()
     elif TASK == 1: pre_train_model()
