@@ -9,7 +9,7 @@ from run_classifier import main as classfier_main
 
 def get_corpus():
     matchObj = re.compile(r'(.+)&([0-9]+)', re.M | re.I)
-    print("read file: %s,\twrite file: %s" % (conf.original_corpus, conf.pretrain_corpus))
+    print("read file: %s\nwrite file: %s" % (conf.original_corpus, conf.pretrain_corpus))
     for i, filename in enumerate(tqdm(os.listdir(conf.original_corpus))):
         corpus = []
         if not os.path.exists(conf.pretrain_corpus): os.makedirs(conf.pretrain_corpus)
