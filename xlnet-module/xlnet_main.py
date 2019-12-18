@@ -40,8 +40,8 @@ def run_classifier():
     app.run(classfier_main)
 
 if __name__ == "__main__":
-    get_corpus(); exit()
     #feature2tokens()
-    if TASK == 0:   get_pretrain_data()
-    elif TASK == 1: pre_train_model()
-    elif TASK == 2: run_classifier()
+    if TASK == 0: get_corpus()
+    elif TASK == 1:   get_pretrain_data()
+    elif TASK == 2: pre_train_model()
+    elif TASK == 3: run_classifier()

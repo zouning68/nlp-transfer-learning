@@ -3,7 +3,7 @@ from absl import flags
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 
-TASK = 2    # 0: preprocess, 1: pretrain, 2: finetuning run_classifier
+TASK = 0    #   0: generate corpus, 1: preprocess, 2: pretrain, 3: finetuning run_classifier
 
 class Config:
     def __init__(self):
