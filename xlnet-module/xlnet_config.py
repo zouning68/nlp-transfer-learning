@@ -3,7 +3,7 @@ from absl import flags
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 
-TASK = 0    #   0: generate corpus, 1: preprocess, 2: pretrain, 3: finetuning run_classifier
+TASK = 1    #   0: generate corpus, 1: preprocess, 2: pretrain, 3: finetuning run_classifier
 
 class Config:
     def __init__(self):
@@ -44,7 +44,7 @@ flags.DEFINE_integer("mask_beta", default=1, help="How many tokens to mask withi
 flags.DEFINE_bool("uncased", True, help="Use uncased inputs or not.")
 flags.DEFINE_integer("num_predict", default=50, help="Num of tokens to predict.")
 flags.DEFINE_integer("bsz_per_host", 32, help="batch size per host.")
-if TASK == 0:
+if TASK == 1:
     #************************************ preprocess data_utils.py parameters ******************************************#
     flags.DEFINE_bool("use_eod", True, help="whether to append EOD at the end of a doc.")
     flags.DEFINE_bool("from_raw_text", True, help="Whether the input is raw text or encoded ids.")
@@ -55,7 +55,7 @@ if TASK == 0:
     flags.DEFINE_integer("pass_id", 0, help="ID of the current pass. Different passes sample different negative segment.")
     flags.DEFINE_integer("num_task", 1, help="Number of total tasks.")
     flags.DEFINE_integer("task", 0, help="The Task ID. This value is used when using multiple workers to identify each worker.")
-elif TASK == 1:
+elif TASK == 2:
     #************************************ pretrain train.py parameters ******************************************#
     flags.DEFINE_integer("perm_size", 32, help="Window size of permutation.")
     flags.DEFINE_integer("n_token", 32000, help="Vocab size")
@@ -74,7 +74,7 @@ elif TASK == 1:
     flags.DEFINE_bool("untie_r", default=True, help="Untie r_w_bias and r_r_bias")
     flags.DEFINE_bool("same_length", default=False, help="Same length attention")
     flags.DEFINE_string("init_checkpoint", default=None, help="Checkpoint path for initializing the model.")   # pretrain_model
-elif TASK == 2:
+elif TASK == 3:
     #************************************ finetuning run_classifier.py parameters ******************************************#
     flags.DEFINE_bool("do_predict", default=False, help="whether to do prediction")
     flags.DEFINE_bool("do_train", default=True, help="whether to do training")
