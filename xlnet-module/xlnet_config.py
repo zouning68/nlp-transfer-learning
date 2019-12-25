@@ -3,7 +3,7 @@ from absl import flags
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 
-TASK = 1    #   0: generate corpus, 1: preprocess, 2: pretrain, 3: finetuning run_classifier
+TASK = 4    #   0: generate corpus, 1: preprocess, 2: pretrain, 3: finetuning run_classifier, 4: ner task
 
 class Config:
     def __init__(self):
@@ -14,6 +14,9 @@ conf = Config()
 FLAGS = flags.FLAGS
 #'''
 #************************************ common parameters ******************************************#
+flags.DEFINE_bool("do_train", default=True, help="whether to do training")
+flags.DEFINE_bool("do_eval", default=True, help="whether to do eval")
+flags.DEFINE_bool("do_predict", default=True, help="whether to do prediction")
 flags.DEFINE_bool("use_tpu", False, help="whether to use TPUs")
 flags.DEFINE_string("master", default=None, help="master")
 flags.DEFINE_integer("num_hosts", default=1, help="number of TPU hosts")
@@ -44,6 +47,12 @@ flags.DEFINE_integer("mask_beta", default=1, help="How many tokens to mask withi
 flags.DEFINE_bool("uncased", True, help="Use uncased inputs or not.")
 flags.DEFINE_integer("num_predict", default=50, help="Num of tokens to predict.")
 flags.DEFINE_integer("bsz_per_host", 32, help="batch size per host.")
+flags.DEFINE_integer("iterations", default=1000, help="Number of iterations per repeat loop.")
+flags.DEFINE_integer("save_steps", default=100, help="Save the model for every save_steps. If None, not to save any model.")
+flags.DEFINE_integer("max_seq_length", default=128, help="Max sequence length : (pretrain flags.seq_len)")
+flags.DEFINE_bool("overwrite_data", default=True, help="If False, will use cached data if available.")
+flags.DEFINE_integer("shuffle_buffer", default=2048, help="Buffer size used for shuffle.")
+flags.DEFINE_string("model_config_path", default="pretrain_model/config.json", help="Model config path.")
 if TASK == 1:
     #************************************ preprocess data_utils.py parameters ******************************************#
     flags.DEFINE_bool("use_eod", True, help="whether to append EOD at the end of a doc.")
@@ -62,11 +71,9 @@ elif TASK == 2:
     flags.DEFINE_string("model_dir", default="pretrain_model", help="Estimator model_dir.")
     flags.DEFINE_string("record_info_dir", default="proc_data/pretrain_corpus/tfrecords", help="Path to local directory containing `record_info-lm.json`.")
     flags.DEFINE_integer("mem_len", default=384, help="Number of steps to cache")
-    flags.DEFINE_integer("iterations", default=1000, help="Number of iterations per repeat loop.")
-    flags.DEFINE_integer("save_steps", default=5, help="Number of steps for model checkpointing. None for not saving checkpoints")
     flags.DEFINE_integer("batch_size", default=2, help="batch size of every train step")
     flags.DEFINE_integer("n_layer", default=2, help="Number of layers.")
-    flags.DEFINE_integer("d_model", default=100, help="Dimension of the model.")
+    flags.DEFINE_integer("d_model", default=100, help="Dimension of the model. embedding of input token")
     flags.DEFINE_integer("n_head", default=4, help="Number of attention heads.")
     flags.DEFINE_integer("d_head", default=8, help="Dimension of each attention head.")
     flags.DEFINE_integer("d_inner", default=128, help="Dimension of inner hidden size in positionwise feed-forward.")
@@ -76,22 +83,27 @@ elif TASK == 2:
     flags.DEFINE_string("init_checkpoint", default=None, help="Checkpoint path for initializing the model.")   # pretrain_model
 elif TASK == 3:
     #************************************ finetuning run_classifier.py parameters ******************************************#
-    flags.DEFINE_bool("do_predict", default=False, help="whether to do prediction")
-    flags.DEFINE_bool("do_train", default=True, help="whether to do training")
     flags.DEFINE_string("output_dir", default="proc_data/imdb", help="Output dir for TF records.")
     flags.DEFINE_string("task_name", default="imdb", help="Task name")
     flags.DEFINE_bool("is_regression", default=False, help="Whether it's a regression task.")
     flags.DEFINE_string("spiece_model_file", default="token_model/english/spiece.model", help="Sentence Piece model path.")
-    flags.DEFINE_integer("max_seq_length", default=128, help="Max sequence length : (pretrain flags.seq_len)")
     flags.DEFINE_string("data_dir", default="data/aclImdb", help="Directory for input data.")
-    flags.DEFINE_bool("overwrite_data", default=False, help="If False, will use cached data if available.")
-    flags.DEFINE_integer("shuffle_buffer", default=2048, help="Buffer size used for shuffle.")
-    flags.DEFINE_string("model_config_path", default="pretrain_model/config.json", help="Model config path.")
     flags.DEFINE_string("summary_type", default="last", help="Method used to summarize a sequence into a compact vector.")
     flags.DEFINE_bool("use_summ_proj", default=True, help="Whether to use projection for summarizing sequences.")
     flags.DEFINE_string("cls_scope", default=None, help="Classifier layer scope.")
-    flags.DEFINE_integer("save_steps", default=10, help="Save the model for every save_steps. If None, not to save any model.")
-    flags.DEFINE_integer("iterations", default=1000, help="number of iterations per TPU training loop.")
     flags.DEFINE_string("model_dir", default="finetuning_model/imdb", help="Directory for saving the finetuned model.")
     flags.DEFINE_string("init_checkpoint", default="pretrain_model/model.ckpt-35", help="checkpoint path for initializing the model. Could be a pretrained model or a finetuned model.")
+elif TASK == 4:
+    flags.DEFINE_string("output_dir", default="proc_data/ner", help="Output dir for TF records.")
+    flags.DEFINE_string("task_name", default="ner", help="Task name")
+    flags.DEFINE_string("spiece_model_file", default="token_model/chinese/spiece.model", help="Sentence Piece model path.")
+    flags.DEFINE_string("model_dir", default="finetuning_model/ner", help="Directory for saving the finetuned model.")
+    flags.DEFINE_string("data_dir", default="data/ner", help="Directory for input data.")
+    flags.DEFINE_string("init_checkpoint", default="pretrain_model/model.ckpt-35", help="checkpoint path for initializing the model. Could be a pretrained model or a finetuned model.")
+    flags.DEFINE_string("eval_split", default="dev", help="could be dev or test")
+    flags.DEFINE_integer("eval_batch_size", default=8, help="batch size for evaluation")
+    flags.DEFINE_bool("eval_all_ckpt", default=False, help="Eval all ckpts. If False, only evaluate the last one.")
+    flags.DEFINE_string("predict_dir", default="predict/ner", help="Dir for saving prediction files.")
+    flags.DEFINE_string("predict_ckpt", default=None, help="Ckpt path for do_predict. If None, use the last one.")
+    pass
 #'''

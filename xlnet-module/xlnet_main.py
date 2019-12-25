@@ -1,4 +1,4 @@
-import json, os, re, sys
+import json, os, re
 import tensorflow as tf
 from data_utils import create_data
 from xlnet_config import conf, TASK
@@ -6,6 +6,8 @@ from absl import app
 from train import main as pre_train_main
 from tqdm import tqdm
 from run_classifier import main as classfier_main
+
+tf.logging.set_verbosity(tf.logging.INFO)
 
 def get_corpus():
     matchObj = re.compile(r'(.+)&([0-9]+)', re.M | re.I)
@@ -31,7 +33,6 @@ def feature2tokens():
         a=1
 
 def get_pretrain_data():
-    tf.logging.set_verbosity(tf.logging.INFO)
     tf.app.run(create_data)
 
 def pre_train_model():
