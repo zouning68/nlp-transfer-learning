@@ -1,9 +1,12 @@
 import os
 from absl import flags
+# GPU 设置
+# nvidia-smi
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 
-TASK = 4    #   0: generate corpus, 1: preprocess, 2: pretrain, 3: finetuning run_classifier, 4: ner task
+TASK = 2    #   0: generate corpus, 1: preprocess, 2: pretrain, 3: finetuning run_classifier, 4: ner task
 
 class Config:
     def __init__(self):
@@ -80,7 +83,7 @@ elif TASK == 2:
     flags.DEFINE_string("ff_activation", default="relu", help="Activation type used in position-wise feed-forward.")
     flags.DEFINE_bool("untie_r", default=True, help="Untie r_w_bias and r_r_bias")
     flags.DEFINE_bool("same_length", default=False, help="Same length attention")
-    flags.DEFINE_string("init_checkpoint", default=None, help="Checkpoint path for initializing the model.")   # pretrain_model
+    flags.DEFINE_string("init_checkpoint", default="pretrain_model", help="Checkpoint path for initializing the model.")   # pretrain_model
 elif TASK == 3:
     #************************************ finetuning run_classifier.py parameters ******************************************#
     flags.DEFINE_string("output_dir", default="proc_data/imdb", help="Output dir for TF records.")

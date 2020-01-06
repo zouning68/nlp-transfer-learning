@@ -26,8 +26,8 @@ def configure_tpu(FLAGS):
 
   session_config = tf.ConfigProto(allow_soft_placement=True)
   # Uncomment the following line if you hope to monitor GPU RAM growth
-  # session_config.gpu_options.allow_growth = True
-
+  session_config.gpu_options.allow_growth = True;  session_config.session_config.gpu_options.per_process_gpu_memory_fraction = 0.5
+  
   if FLAGS.use_tpu:
     strategy = None
     tf.logging.info('Use TPU without distribute strategy.')
