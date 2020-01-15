@@ -7,6 +7,7 @@ from train import main as pre_train_main
 from tqdm import tqdm
 from run_classifier import main as classfier_main
 from run_ner import main as ner_main
+from run_race import main as race_main
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -45,6 +46,9 @@ def run_classifier():
 def run_ner():
     tf.app.run(ner_main)
 
+def run_race():
+    tf.app.run(race_main)
+
 if __name__ == "__main__":
     #feature2tokens()
     if TASK == 0: get_corpus()
@@ -52,3 +56,5 @@ if __name__ == "__main__":
     elif TASK == 2: pre_train_model()
     elif TASK == 3: run_classifier()
     elif TASK == 4: run_ner()
+    elif TASK == 5: run_race()
+    else: raise NotImplementedError

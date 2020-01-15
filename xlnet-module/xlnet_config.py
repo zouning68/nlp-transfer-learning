@@ -6,7 +6,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 
-TASK = 2    #   0: generate corpus, 1: preprocess, 2: pretrain, 3: finetuning run_classifier, 4: ner task
+TASK = 5    #   0: generate corpus, 1: preprocess, 2: pretrain, 3: finetuning run_classifier, 4: ner task, 5: race task
 
 class Config:
     def __init__(self):
@@ -53,9 +53,11 @@ flags.DEFINE_integer("bsz_per_host", 32, help="batch size per host.")
 flags.DEFINE_integer("iterations", default=1000, help="Number of iterations per repeat loop.")
 flags.DEFINE_integer("save_steps", default=100, help="Save the model for every save_steps. If None, not to save any model.")
 flags.DEFINE_integer("max_seq_length", default=128, help="Max sequence length : (pretrain flags.seq_len)")
-flags.DEFINE_bool("overwrite_data", default=True, help="If False, will use cached data if available.")
+flags.DEFINE_bool("overwrite_data", default=False, help="If False, will use cached data if available.")
 flags.DEFINE_integer("shuffle_buffer", default=2048, help="Buffer size used for shuffle.")
 flags.DEFINE_string("model_config_path", default="pretrain_model/config.json", help="Model config path.")
+flags.DEFINE_string("summary_type", default="last", help="Method used to summarize a sequence into a compact vector.")
+flags.DEFINE_bool("use_summ_proj", default=True, help="Whether to use projection for summarizing sequences.")
 if TASK == 1:
     #************************************ preprocess data_utils.py parameters ******************************************#
     flags.DEFINE_bool("use_eod", True, help="whether to append EOD at the end of a doc.")
@@ -91,8 +93,6 @@ elif TASK == 3:
     flags.DEFINE_bool("is_regression", default=False, help="Whether it's a regression task.")
     flags.DEFINE_string("spiece_model_file", default="token_model/english/spiece.model", help="Sentence Piece model path.")
     flags.DEFINE_string("data_dir", default="data/aclImdb", help="Directory for input data.")
-    flags.DEFINE_string("summary_type", default="last", help="Method used to summarize a sequence into a compact vector.")
-    flags.DEFINE_bool("use_summ_proj", default=True, help="Whether to use projection for summarizing sequences.")
     flags.DEFINE_string("cls_scope", default=None, help="Classifier layer scope.")
     flags.DEFINE_string("model_dir", default="finetuning_model/imdb", help="Directory for saving the finetuned model.")
     flags.DEFINE_string("init_checkpoint", default="pretrain_model/model.ckpt-35", help="checkpoint path for initializing the model. Could be a pretrained model or a finetuned model.")
@@ -108,5 +108,14 @@ elif TASK == 4:
     flags.DEFINE_bool("eval_all_ckpt", default=False, help="Eval all ckpts. If False, only evaluate the last one.")
     flags.DEFINE_string("predict_dir", default="predict/ner", help="Dir for saving prediction files.")
     flags.DEFINE_string("predict_ckpt", default=None, help="Ckpt path for do_predict. If None, use the last one.")
+elif TASK == 5:
+    flags.DEFINE_string("init_checkpoint", default="pretrain_model/model.ckpt-35", help="checkpoint path for initializing the model. Could be a pretrained model or a finetuned model.")
+    flags.DEFINE_string("output_dir", default="./proc_data/race", help="Output dir for TF records.")
+    flags.DEFINE_string("spiece_model_file", default="token_model/english/spiece.model", help="Sentence Piece model path.")
+    flags.DEFINE_string("model_dir", default="finetuning_model/race", help="Directory for saving the finetuned model.")
+    flags.DEFINE_string("data_dir", default="./data/race", help="Directory for input data.")
+    flags.DEFINE_bool("high_only", default=False, help="Evaluate on high school only.")
+    flags.DEFINE_bool("middle_only", default=False, help="Evaluate on middle school only.")
+    flags.DEFINE_integer("max_qa_length", default=128, help="Max length for the concatenated question and answer.")
     pass
 #'''
